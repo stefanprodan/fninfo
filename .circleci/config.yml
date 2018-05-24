@@ -6,7 +6,7 @@ jobs:
     steps:
       - checkout
       - run: |
-          curl -sSL https://cli.openfaas.com | sh
+          curl -sSL https://cli.openfaas.com | sudo sh
       - run: faas-cli build -f fninfo.yml
 
   deploy:
