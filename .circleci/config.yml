@@ -11,7 +11,7 @@ jobs:
           name: Build function
           command: make build
       - run:
-          name: Push function to registry
+          name: Push master to registry
           command: |
             if [[ -z "${CIRCLE_PULL_REQUEST}" ]] && [[ "${CIRCLE_PROJECT_USERNAME}" = "stefanprodan" ]] ; then
               echo $REGISTRY_PASSWORD | docker login --username $REGISTRY_USERNAME --password-stdin
@@ -19,7 +19,15 @@ jobs:
             else
               echo "Do not push image"
             fi
-
+      - run:
+          name: Push tag to registry
+          command: |
+            if [[ -z "${CIRCLE_TAG}" ]] && [[ "${CIRCLE_PROJECT_USERNAME}" = "stefanprodan" ]] ; then
+              docker tag stefanprodan/fninfo:latest stefanprodan/fninfo:${CIRCLE_TAG}
+              docker push stefanprodan/fninfo:${CIRCLE_TAG}
+            else
+              echo "Do not push image"
+            fi
 workflows:
   version: 2
   main:
