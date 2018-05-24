@@ -1,22 +1,18 @@
 version: 2
 jobs:
-
-  build:
+  deploy:
     machine: true
     steps:
       - checkout
-      - run: |
-          curl -sSL https://cli.openfaas.com | sudo sh
-      - run: faas-cli build -f fninfo.yml
-
-  deploy:
-    docker:
-      - image: docker:18.05.0-ce-git
-    steps:
-      - checkout
-      - setup_remote_docker: {docker_layer_caching: true}
       - run:
-          name: Push
+          name: Install OpenFaaS CLI
+          command: |
+          curl -sSL https://cli.openfaas.com | sudo sh
+      - run:
+          name: Build function
+          command: faas-cli build -f fninfo.yml
+      - run:
+          name: Push function to registry
           command: |
             if [[ -z "${CIRCLE_PULL_REQUEST}" ]] && [[ "${CIRCLE_PROJECT_USERNAME}" = "stefanprodan" ]] ; then
               echo $REGISTRY_PASSWORD | docker login --username $REGISTRY_USERNAME --password-stdin
@@ -31,8 +27,6 @@ workflows:
   version: 2
   main:
     jobs:
-      - build
       - deploy:
-          requires: [build]
           filters:
             branches: {only: [master]}
