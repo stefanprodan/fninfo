@@ -34,4 +34,7 @@ workflows:
   version: 2
   main:
     jobs:
-      - deploy
+      - deploy:
+          filters:
+            branches: {only: [master]}
+            tags: {only: /^[0-9].*/}
