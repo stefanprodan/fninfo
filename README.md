@@ -1,0 +1,2 @@
+# fninfo
+OpenFaaS info function
