@@ -1,0 +1,16 @@
+apiVersion: o6s.io/v1alpha1
+kind: Function
+metadata:
+  name: fninfo
+  namespace: openfaas-fn
+spec:
+  name: gofast
+  image: stefanprodan/fninfo
+  environment:
+    output: "json"
+  limits:
+    cpu: "1000m"
+    memory: "128Mi"
+  requests:
+    cpu: "10m"
+    memory: "64Mi"
