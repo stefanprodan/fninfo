@@ -5,6 +5,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"strings"
 	"time"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -12,13 +13,11 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-// Handle a serverless request
 func Handle(req []byte) string {
-
-	if "delay" == string(req) {
-		rand.Seed(time.Now().Unix())
-
+	request := strings.TrimSpace(string(req))
+	if "delay" == request {
 		// Processing will take 1-5 seconds
+		rand.Seed(time.Now().Unix())
 		processTime := time.Duration(rand.Intn(4)+1) * time.Second
 		time.Sleep(processTime)
 	}
@@ -34,7 +33,7 @@ func Handle(req []byte) string {
 	}
 
 	ns := "openfaas-fn"
-	if namespace, exists := os.LookupEnv("function_namespace"); exists {
+	if namespace, exists := os.LookupEnv("namespace"); exists {
 		ns = namespace
 	}
 
@@ -79,7 +78,7 @@ func Handle(req []byte) string {
 		svcList,
 		secList,
 		os.Environ(),
-		string(req),
+		request,
 	}
 
 	rb, err := json.Marshal(r)
