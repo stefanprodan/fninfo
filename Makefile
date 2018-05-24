@@ -1,6 +1,10 @@
 GITCOMMIT:=$(shell git describe --dirty --always)
 GATEWAY:="https://openfaas.weavedx.com"
 
+.PHONY: cli
+cli:
+	curl -sSL https://cli.openfaas.com | sudo sh
+
 .PHONY: build
 build:
 	faas build -f fninfo.yml
@@ -15,4 +19,5 @@ push:
 .PHONY: deploy
 deploy:
 	faas-cli deploy --image=stefanprodan/fninfo:$(GITCOMMIT) --name=fninfo -g=$(GATEWAY)
+
 

@@ -6,19 +6,16 @@ jobs:
       - checkout
       - run:
           name: Install OpenFaaS CLI
-          command: |
-            curl -sSL https://cli.openfaas.com | sudo sh
+          command: make cli
       - run:
           name: Build function
-          command: faas-cli build -f fninfo.yml
+          command: make build
       - run:
           name: Push function to registry
           command: |
             if [[ -z "${CIRCLE_PULL_REQUEST}" ]] && [[ "${CIRCLE_PROJECT_USERNAME}" = "stefanprodan" ]] ; then
               echo $REGISTRY_PASSWORD | docker login --username $REGISTRY_USERNAME --password-stdin
-              docker tag stefanprodan/fninfo:latest stefanprodan/fninfo:${CIRCLE_SHA1}
-              docker push stefanprodan/fninfo:${CIRCLE_SHA1}
-              docker push stefanprodan/fninfo:latest
+              make push
             else
               echo "Do not push image"
             fi
