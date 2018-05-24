@@ -13,7 +13,7 @@ jobs:
       - run:
           name: Push master to registry
           command: |
-            if [[ -z "${CIRCLE_PULL_REQUEST}" ]] && [[ "${CIRCLE_PROJECT_USERNAME}" = "stefanprodan" ]] ; then
+            if [[ -z "${CIRCLE_PULL_REQUEST}" ]] && [[ -z "${CIRCLE_TAG}" ]] && [[ "${CIRCLE_PROJECT_USERNAME}" = "stefanprodan" ]] ; then
               echo $REGISTRY_PASSWORD | docker login --username $REGISTRY_USERNAME --password-stdin
               make push
             else
@@ -22,16 +22,16 @@ jobs:
       - run:
           name: Push tag to registry
           command: |
-            if [[ -z "${CIRCLE_TAG}" ]] && [[ "${CIRCLE_PROJECT_USERNAME}" = "stefanprodan" ]] ; then
+            if echo "${CIRCLE_TAG}" | grep -Eq "^[0-9]+(\.[0-9]+)*(-[a-z]+)?$"; then
+              echo $REGISTRY_PASSWORD | docker login --username $REGISTRY_USERNAME --password-stdin
               docker tag stefanprodan/fninfo:latest stefanprodan/fninfo:${CIRCLE_TAG}
               docker push stefanprodan/fninfo:${CIRCLE_TAG}
             else
               echo "Do not push image"
             fi
+
 workflows:
   version: 2
   main:
     jobs:
-      - deploy:
-          filters:
-            branches: {only: [master]}
+      - deploy
