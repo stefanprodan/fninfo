@@ -3,7 +3,9 @@ package function
 import (
 	"encoding/json"
 	"log"
+	"math/rand"
 	"os"
+	"time"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -12,6 +14,14 @@ import (
 
 // Handle a serverless request
 func Handle(req []byte) string {
+
+	if "delay" == string(req) {
+		rand.Seed(time.Now().Unix())
+
+		// Processing will take 1-5 seconds
+		processTime := time.Duration(rand.Intn(4)+1) * time.Second
+		time.Sleep(processTime)
+	}
 
 	cfg, err := rest.InClusterConfig()
 	if err != nil {
