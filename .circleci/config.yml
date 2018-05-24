@@ -3,13 +3,16 @@ jobs:
 
   build:
     docker:
-      - image: openfaas/faas-cli:0.6.9
+      - image: docker:18.05.0-ce-git
     steps:
       - checkout
       - setup_remote_docker: {docker_layer_caching: true}
       - run:
           name: Build
-          command: ./faas-cli build -f fninfo.yml
+          command: |
+            curl -sSL https://cli.openfaas.com | sh
+            faas-cli build -f fninfo.yml
+
 
   deploy:
     docker:
