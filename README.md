@@ -50,43 +50,48 @@ Invoke function:
 echo "test" | faas invoke fninfo | jq .
 
 {
-  "Hostname": "fninfo-6498fbd77c-x7vqh",
-  "Pods": [
-    "certinfo-7874f9c8f5-5gjrr",
-    "fninfo-6498fbd77c-x7vqh",
-    "nodeinfo-b8fdcd9d4-rgdzq",
-    "sentimentanalysis-76b4968d64-58zjn"
-  ],
-  "Services": [
-    "certinfo",
-    "fninfo",
-    "nodeinfo",
-    "sentimentanalysis"
-  ],
-  "Deployments": [
-    "certinfo",
-    "fninfo",
-    "nodeinfo",
-    "sentimentanalysis"
+  "Hostname": "fninfo-6c7bd759cd-pr52v",
+  "Namespaces": [
+    {
+      "Name": "kube-system",
+      "Pods": 9,
+      "Deployments": 6,
+      "Services": 5
+    },
+    {
+      "Name": "openfaas",
+      "Pods": 7,
+      "Deployments": 4,
+      "Services": 3
+    },
+    {
+      "Name": "openfaas-fn",
+      "Pods": 4,
+      "Deployments": 4,
+      "Services": 4
+    }
   ],
   "Environment": [
-    "fprocess=./handler",
-    "HOME=/home/app",
-    "Http_User_Agent=Go-http-client/2.0",
-    "Http_Authorization=Basic YWRtaW46YWRtaW4=",
-    "Http_X_Forwarded_Proto=https",
-    "Http_X_Request_Id=0937af80-869e-468f-867b-c950bb0ddcd3",
-    "Http_X_Forwarded_For=10.56.0.160:39364",
-    "Http_Content_Type=text/plain",
-    "Http_X_Call_Id=795b7945-af8b-4a0e-943b-b296d19dbc69",
-    "Http_X_Envoy_Internal=true",
+    "Http_X_Forwarded_For=10.56.0.160:35656",
     "Http_X_Envoy_Expected_Rq_Timeout_Ms=15000",
-    "Http_X_Start_Time=1527200696113845058",
+    "Http_Content_Type=text/plain",
+    "Http_User_Agent=Go-http-client/2.0",
+    "Http_X_Call_Id=baf4758d-cf8a-4f4d-af8e-f2a2c6e055dd",
+    "Http_X_Request_Id=a1c2b3f8-85c8-4696-8f47-04487421bbfa",
+    "Http_X_Start_Time=1527236562012143249",
+    "Http_X_Envoy_Internal=true",
+    "Http_X_Forwarded_Proto=https",
     "Http_Accept_Encoding=gzip",
     "Http_Method=POST",
     "Http_ContentLength=-1",
     "Http_Path=/function/fninfo"
   ],
-  "Request": "test\n"
+  "Request": "test"
 }
+```
+
+Add a random response delay between 1 to 5 seconds:
+
+```bash
+echo "delay" | faas invoke fninfo
 ```
