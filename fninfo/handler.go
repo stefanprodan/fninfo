@@ -82,9 +82,11 @@ func Handle(req []byte) string {
 
 	r.Namespaces = nsList
 
-	secrets, err := walkDir(secPath)
-	if err == nil {
-		r.Secrets = secrets
+	if _, err := os.Stat(secPath); err == nil {
+		secrets, err := walkDir(secPath)
+		if err == nil {
+			r.Secrets = secrets
+		}
 	}
 
 	rb, err := json.Marshal(r)
