@@ -32,54 +32,55 @@ func Handle(req []byte) string {
 		log.Fatal(err)
 	}
 
-	ns := "openfaas-fn"
-	if namespace, exists := os.LookupEnv("namespace"); exists {
-		ns = namespace
-	}
-
-	pods, err := kubeClient.CoreV1().Pods(ns).List(metav1.ListOptions{})
-	if err != nil {
-		log.Fatalln("failed to read pods:", err)
-	}
-
-	var podList []string
-	for _, pod := range pods.Items {
-		podList = append(podList, pod.GetName())
-	}
-
-	svc, err := kubeClient.CoreV1().Services(ns).List(metav1.ListOptions{})
-	if err != nil {
-		log.Fatalln("failed to read services:", err)
-	}
-
-	var svcList []string
-	for _, s := range svc.Items {
-		svcList = append(svcList, s.GetName())
-	}
-
-	sec, err := kubeClient.AppsV1beta1().Deployments(ns).List(metav1.ListOptions{})
-	if err != nil {
-		log.Fatalln("failed to read deployments:", err)
-	}
-
-	var secList []string
-	for _, s := range sec.Items {
-		secList = append(secList, s.GetName())
-	}
-
 	host, err := os.Hostname()
 	if err != nil {
 		log.Fatalln("failed to read hostname:", err)
 	}
 
 	r := Response{
-		host,
-		podList,
-		svcList,
-		secList,
-		os.Environ(),
-		request,
+		Hostname:    host,
+		Environment: os.Environ(),
+		Request:     request,
 	}
+
+	//ns := "openfaas-fn"
+	//if namespace, exists := os.LookupEnv("namespace"); exists {
+	//	ns = namespace
+	//}
+
+	nss, err := kubeClient.CoreV1().Namespaces().List(metav1.ListOptions{})
+	if err != nil {
+		log.Fatalln("failed to read namespaces:", err)
+	}
+
+	var nsList []Namespace
+	for _, n := range nss.Items {
+		nsItem := Namespace{
+			Name: n.GetName(),
+		}
+
+		pods, err := kubeClient.CoreV1().Pods(n.GetName()).List(metav1.ListOptions{})
+		if err != nil {
+			log.Fatalln("failed to read pods:", err)
+		}
+		nsItem.Pods = len(pods.Items)
+
+		svc, err := kubeClient.CoreV1().Services(n.GetName()).List(metav1.ListOptions{})
+		if err != nil {
+			log.Fatalln("failed to read services:", err)
+		}
+		nsItem.Services = len(svc.Items)
+
+		dep, err := kubeClient.AppsV1beta1().Deployments(n.GetName()).List(metav1.ListOptions{})
+		if err != nil {
+			log.Fatalln("failed to read deployments:", err)
+		}
+		nsItem.Deployments = len(dep.Items)
+
+		nsList = append(nsList, nsItem)
+	}
+
+	r.Namespaces = nsList
 
 	rb, err := json.Marshal(r)
 	if err != nil {
@@ -91,9 +92,14 @@ func Handle(req []byte) string {
 
 type Response struct {
 	Hostname    string
-	Pods        []string
-	Services    []string
-	Deployments []string
+	Namespaces  []Namespace
 	Environment []string
 	Request     string
+}
+
+type Namespace struct {
+	Name        string
+	Pods        int
+	Deployments int
+	Services    int
 }
