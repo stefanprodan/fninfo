@@ -43,10 +43,10 @@ func Handle(req []byte) string {
 		Request:     request,
 	}
 
-	//ns := "openfaas-fn"
-	//if namespace, exists := os.LookupEnv("namespace"); exists {
-	//	ns = namespace
-	//}
+	secPath := "/var/openfaas"
+	if sec, exists := os.LookupEnv("secrets_path"); exists {
+		secPath = sec
+	}
 
 	nss, err := kubeClient.CoreV1().Namespaces().List(metav1.ListOptions{})
 	if err != nil {
@@ -82,24 +82,15 @@ func Handle(req []byte) string {
 
 	r.Namespaces = nsList
 
+	secrets, err := walkDir(secPath)
+	if err == nil {
+		r.Secrets = secrets
+	}
+
 	rb, err := json.Marshal(r)
 	if err != nil {
 		log.Fatalln("failed to serialize respose:", err)
 	}
 
 	return string(rb)
-}
-
-type Response struct {
-	Hostname    string
-	Namespaces  []Namespace
-	Environment []string
-	Request     string
-}
-
-type Namespace struct {
-	Name        string
-	Pods        int
-	Deployments int
-	Services    int
 }

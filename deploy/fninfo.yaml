@@ -5,12 +5,15 @@ metadata:
   namespace: openfaas-fn
 spec:
   name: fninfo
-  image: stefanprodan/fninfo:0.0.4
+  image: stefanprodan/fninfo:0.0.5
   environment:
     namespace: "openfaas-fn"
+    secrets_path: "/var/openfaas"
+  labels:
+    release: "ga"
   limits:
     cpu: "2000m"
     memory: "256Mi"
   requests:
-    cpu: "10m"
+    cpu: "100m"
     memory: "64Mi"
