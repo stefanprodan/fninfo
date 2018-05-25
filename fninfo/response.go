@@ -1,8 +1,8 @@
 package function
 
 import (
-	"path/filepath"
 	"os"
+	"path/filepath"
 )
 
 type Response struct {
