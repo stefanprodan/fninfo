@@ -30,11 +30,13 @@ metadata:
   name: fninfo
   namespace: openfaas-fn
 spec:
-  name: gofast
-  image: stefanprodan/fninfo
+  name: fninfo
+  image: stefanprodan/fninfo:0.0.4
+  environment:
+    namespace: "openfaas-fn"
   limits:
-    cpu: "1000m"
-    memory: "128Mi"
+    cpu: "2000m"
+    memory: "256Mi"
   requests:
     cpu: "10m"
     memory: "64Mi"

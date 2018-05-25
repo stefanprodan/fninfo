@@ -4,7 +4,7 @@ metadata:
   name: fninfo
   namespace: openfaas-fn
 spec:
-  name: gofast
+  name: fninfo
   image: stefanprodan/fninfo:0.0.4
   environment:
     namespace: "openfaas-fn"
