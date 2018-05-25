@@ -21,6 +21,12 @@ subjects:
 kubectl apply -f ./deploy/readonly-role.yaml
 ```
 
+Create a secret named `fninfo-token`:
+
+```bash
+kubectl -n openfaas-fn create secret generic fninfo-token --from-literal=token=c1d116c6bfb
+```
+
 Deploy (requires OpenFaaS Operator):
 
 ```yaml
@@ -31,14 +37,18 @@ metadata:
   namespace: openfaas-fn
 spec:
   name: fninfo
-  image: stefanprodan/fninfo:0.0.4
+  image: stefanprodan/fninfo:latest
   environment:
-    namespace: "openfaas-fn"
+    secrets_path: "/var/openfaas"
+  labels:
+    release: "ga"
+  secrets:
+    - fninfo-token
   limits:
     cpu: "2000m"
     memory: "256Mi"
   requests:
-    cpu: "10m"
+    cpu: "100m"
     memory: "64Mi"
 ```
 
